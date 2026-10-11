@@ -1,0 +1,50 @@
+{
+  "msg_type": "interactive",
+  "card": {
+    "schema": "2.0",
+    "header": {
+      "template": {{ color | tojson }},
+      "title": { "tag": "plain_text", "content": {{ title | tojson }} }
+    },
+    "body": {
+      "elements": [
+        {
+          "tag": "column_set",
+          "flex_mode": "stretch",
+          "horizontal_spacing": "8px",
+          "margin": "0px",
+          "columns": [
+            {
+              "tag": "column",
+              "weight": 1,
+              "width": "weighted",
+              "elements": [
+                { "tag": "markdown", "content": {{ project_text | tojson }} },
+                { "tag": "markdown", "content": {{ namespace_text | tojson }} }
+              ]
+            },
+            {
+              "tag": "column",
+              "weight": 1,
+              "width": "weighted",
+              "elements": [
+                { "tag": "markdown", "content": {{ publisher_text | tojson }} },
+                { "tag": "markdown", "content": {{ version_text | tojson }} }
+              ]
+            }
+          ]
+        }
+        {% if links %}
+        ,{ "tag": "markdown", "content": {{ links | tojson }} }
+        {% endif %}
+        {% if message %}
+        ,{ "tag": "markdown", "content": {{ message | tojson }} }
+        {% endif %}
+        {% if commits %}
+        ,{ "tag": "hr", "margin": "0px" }
+        ,{ "tag": "markdown", "content": {{ commits | tojson }} }
+        {% endif %}
+      ]
+    }
+  }
+}
