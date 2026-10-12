@@ -34,9 +34,6 @@
             }
           ]
         }
-        {% if links %}
-        ,{ "tag": "markdown", "content": {{ links | tojson }} }
-        {% endif %}
         {% if message %}
         ,{ "tag": "markdown", "content": {{ message | tojson }} }
         {% endif %}

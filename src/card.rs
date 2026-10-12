@@ -50,14 +50,6 @@ pub fn build(cli: &Cli, context: &GitLabContext, commits: &str) -> Result<Value>
     } else {
         format!("{} - {}", context.project, context.description)
     };
-    let mut links = Vec::new();
-    if !context.pipeline_url.is_empty() {
-        links.push(link("查看流水线", &context.pipeline_url));
-    }
-    if !context.job_url.is_empty() {
-        links.push(link("查看任务", &context.job_url));
-    }
-
     let mut environment = Environment::new();
     environment.set_undefined_behavior(UndefinedBehavior::Strict);
     environment
@@ -73,7 +65,6 @@ pub fn build(cli: &Cli, context: &GitLabContext, commits: &str) -> Result<Value>
             namespace_text => text("🏷️ 群组", &context.namespace),
             publisher_text => text("👷 发布人", &context.publisher),
             version_text => text("🔖 版本", &context.version),
-            links => links.join(" | "),
             message => cli.message.as_deref().unwrap_or_default(),
             commits => escape(commits),
         })
@@ -106,21 +97,17 @@ mod tests {
 
     #[test]
     fn optional_sections_render_valid_json_in_all_combinations() {
-        for mask in 0..8 {
+        for mask in 0..4 {
             let mut cli = Cli::try_parse_from(["gfn", "success"]).unwrap();
-            let mut context = GitLabContext {
+            let context = GitLabContext {
                 project: "demo".into(),
                 project_url: "https://gitlab.example.com/demo".into(),
                 ..Default::default()
             };
             if mask & 1 != 0 {
-                context.pipeline_url = "https://gitlab.example.com/pipelines/1".into();
-                context.job_url = "https://gitlab.example.com/jobs/1".into();
-            }
-            if mask & 2 != 0 {
                 cli.message = Some("**消息**\n\"quoted\" \\ 中文".into());
             }
-            let commits = if mask & 4 != 0 {
+            let commits = if mask & 2 != 0 {
                 "fix \"quotes\"\nnext"
             } else {
                 ""
@@ -129,9 +116,7 @@ mod tests {
             let elements = body["card"]["body"]["elements"].as_array().unwrap();
             assert_eq!(
                 elements.len(),
-                1 + usize::from(mask & 1 != 0)
-                    + usize::from(mask & 2 != 0)
-                    + 2 * usize::from(mask & 4 != 0)
+                1 + usize::from(mask & 1 != 0) + 2 * usize::from(mask & 2 != 0)
             );
             assert_eq!(
                 elements[0]["columns"][0]["elements"][0]["content"],

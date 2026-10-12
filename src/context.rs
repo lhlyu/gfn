@@ -8,8 +8,6 @@ pub struct GitLabContext {
     pub namespace: String,
     pub publisher: String,
     pub version: String,
-    pub pipeline_url: String,
-    pub job_url: String,
     pub commit_message: String,
 }
 
@@ -37,8 +35,6 @@ impl GitLabContext {
             namespace: get("CI_PROJECT_NAMESPACE"),
             publisher: first_nonempty([get("GITLAB_USER_LOGIN"), get("GITLAB_USER_NAME")]),
             version,
-            pipeline_url: get("CI_PIPELINE_URL"),
-            job_url: get("CI_JOB_URL"),
             commit_message: get("CI_COMMIT_MESSAGE"),
         }
     }
